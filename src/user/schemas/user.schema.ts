@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import * as mongoose from 'mongoose';
+import { RoleEnum } from './role.enum';
 
 export type UserDocument = User & Document;
 
@@ -16,8 +17,8 @@ export class User {
     public_id: { type: string; required: true };
     url: { type: string; required: true };
   };
-  @Prop({ type: String, default: 'user' })
-  role: string;
+  @Prop({ type: [String], default: RoleEnum.user, enum: RoleEnum })
+  role: string[];
   @Prop({ type: Date, default: Date.now })
   createdAt: Date;
   @Prop({ type: String })

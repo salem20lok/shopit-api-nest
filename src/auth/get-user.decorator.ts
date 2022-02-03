@@ -4,6 +4,6 @@ import { User } from '../user/schemas/user.schema';
 export const GetUser = createParamDecorator(
   (_data, ctx: ExecutionContext): User => {
     const req = ctx.switchToHttp().getRequest();
-    return req.user;
+    return req.user._id;
   },
 );

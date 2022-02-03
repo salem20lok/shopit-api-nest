@@ -1,11 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Product } from './schemas/product.schema';
-import { Model } from 'mongoose';
+import { Model, ObjectId } from 'mongoose';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-Product.Dto';
 import { searchProductDto } from './dto/search-product.dto';
-import { filterProductDto } from './dto/filter-product.dto';
 
 @Injectable()
 export class ProductService {
@@ -13,9 +12,8 @@ export class ProductService {
     @InjectModel(Product.name) private ProductModel: Model<Product>,
   ) {}
 
-  async filterProduct(filterProductDto: filterProductDto): Promise<Product[]> {
-    const { price, category, name, rating } = filterProductDto;
-    const filter = this.ProductModel.find();
+  async filterProduct(query): Promise<Product[]> {
+    const filter = this.ProductModel.find(query);
     return filter;
   }
 
@@ -44,7 +42,10 @@ export class ProductService {
     return products;
   }
 
-  async newProduct(CreateProductDto: CreateProductDto): Promise<Product> {
+  async newProduct(
+    CreateProductDto: CreateProductDto,
+    user: ObjectId,
+  ): Promise<Product> {
     const found = await this.ProductModel.findOne({
       name: CreateProductDto.name,
       category: CreateProductDto.category,
@@ -66,6 +67,7 @@ export class ProductService {
       stock: CreateProductDto.stock,
       numOfReviews: CreateProductDto.numOfReviews,
       Reviews: CreateProductDto.Reviews,
+      user,
     });
     const res = await product.save();
     return res;
@@ -74,12 +76,14 @@ export class ProductService {
   async UpdateProduct(
     id: string,
     updateProductDto: UpdateProductDto,
+    user: ObjectId,
   ): Promise<Product> {
     try {
       const found = await this.ProductModel.findById(id);
       if (!found) {
         throw new NotFoundException(`this product${id} not found `);
       }
+      updateProductDto['user'] = user;
       const product = await this.ProductModel.findByIdAndUpdate(
         id,
         updateProductDto,

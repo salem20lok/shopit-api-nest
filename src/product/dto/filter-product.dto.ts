@@ -2,11 +2,15 @@ import { IsOptional } from 'class-validator';
 
 export class filterProductDto {
   @IsOptional()
-  price: number;
+  priceSup: number;
+  @IsOptional()
+  priceInf: number;
   @IsOptional()
   category: string;
   @IsOptional()
   name: string;
   @IsOptional()
-  rating: number;
+  ratingSup: number;
+  @IsOptional()
+  ratingInf: number;
 }
