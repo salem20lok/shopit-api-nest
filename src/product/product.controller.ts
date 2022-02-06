@@ -92,11 +92,12 @@ export class ProductController {
 
   @Post()
   // authorization
-  @Roles(RoleEnum.admin)
+  //@Roles(RoleEnum.admin)
   newProduct(
     @Body() CreateProductDto: CreateProductDto,
     @GetUser() user: ObjectId,
   ): Promise<Product> {
+    console.log(user);
     return this.ProductService.newProduct(CreateProductDto, user);
   }
 

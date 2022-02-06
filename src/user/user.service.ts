@@ -10,11 +10,13 @@ export class UserService {
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
 
   async getAllUser(): Promise<User[]> {
-    return await this.userModel.find();
+    const user: User[] = await this.userModel.find();
+    return user;
   }
 
   async getUserByID(id: string): Promise<User> {
-    return await this.userModel.findById(id);
+    const user = await this.userModel.findById(id);
+    return user;
   }
 
   async updateUser(updateUserDto: UpdateUserDto, id: string): Promise<User> {
