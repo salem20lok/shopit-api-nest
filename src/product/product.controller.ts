@@ -17,7 +17,7 @@ import { searchProductDto } from './dto/search-product.dto';
 import { filterProductDto } from './dto/filter-product.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { Roles } from '../auth/authorization/roles.decorator';
-import { RoleEnum } from '../user/schemas/role.enum';
+import { RoleEnum } from '../auth/authorization/role.enum';
 import { RolesGuard } from '../auth/authorization/roles.guard';
 import { GetUser } from '../auth/get-user.decorator';
 import { ObjectId } from 'mongoose';

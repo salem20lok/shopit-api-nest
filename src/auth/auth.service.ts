@@ -14,12 +14,14 @@ import { JwtService } from '@nestjs/jwt';
 import { JwtPayloadInterface } from './jwt-payload.interface';
 import { ForgetPasswordUserDto } from './dto/ForgetPassword-User.Dto';
 import { ChangePasswordDto } from './dto/changePassword.dto';
+import { MailerService } from '@nestjs-modules/mailer';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectModel(User.name) private UserModel: Model<UserDocument>,
     private JwtService: JwtService,
+    private readonly mailerService: MailerService,
   ) {}
 
   async singUp(authCreateUser: AuthSignupDto): Promise<User> {
@@ -64,9 +66,21 @@ export class AuthService {
       };
       const accessToken: string = await this.JwtService.sign(payload);
 
-      console.log(
-        `http://localhost:3000/user/changePasword/?token=${accessToken}`,
-      );
+      const message = ` <h1> Bonjour madame/monsier :${user.name}</h1> <br/>
+  <p>Vous avez recu un message pour changer votre mot de passe</p>
+  <a href="http://localhost:3000/user/changePasword/?token=${accessToken}">Link_forget_password</a>`;
+
+      this.mailerService
+        .sendMail({
+          to: 'salemlokmani99@gmail.com', // list of receivers
+          from: 'salemlokmani99@gmail.com', // sender address
+          subject: 'Testing Nest MailerModule ✔', // Subject line
+          text: 'welcome', // plaintext body
+          html: message, // HTML body content
+        })
+        .catch((e) => {
+          console.log(e);
+        });
     } catch (e) {
       throw new NotFoundException(
         `this email : ${forgetPassword.email} not Exist`,
@@ -83,12 +97,8 @@ export class AuthService {
       changePasswordDto.password,
       salt,
     );
-    const bilel = await this.UserModel.findById(id);
     await this.UserModel.findByIdAndUpdate(id, {
       password: changePasswordDto.password,
     });
-    const selem = await this.UserModel.findById(id);
-    console.log(bilel);
-    console.log(bilel.password, selem.password);
   }
 }
