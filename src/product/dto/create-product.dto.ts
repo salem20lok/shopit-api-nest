@@ -6,20 +6,28 @@ export class CreateProductDto {
   @IsString()
   @MaxLength(105)
   name: string;
+
   @IsNotEmpty()
   price: number;
+
   @IsNotEmpty()
   description: string;
+
   @IsNotEmpty()
   rating: number;
+
   @IsNotEmpty()
   images: image[];
+
   @IsNotEmpty()
   category: string;
+
   @IsNotEmpty()
   stock: number;
+
   @IsNotEmpty()
   numOfReviews: number;
+
   @IsNotEmpty()
   Reviews: Review[];
 }

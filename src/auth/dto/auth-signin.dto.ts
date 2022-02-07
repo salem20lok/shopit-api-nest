@@ -10,6 +10,7 @@ export class AuthSigninDto {
   @IsNotEmpty()
   @IsEmail()
   email: string;
+
   @IsNotEmpty()
   @MinLength(6)
   @IsString()

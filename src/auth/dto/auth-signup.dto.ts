@@ -11,9 +11,11 @@ import {
 export class AuthSignupDto {
   @IsNotEmpty()
   name: string;
+
   @IsNotEmpty()
   @IsEmail()
   email: string;
+
   @IsNotEmpty()
   @MinLength(6)
   @IsString()
@@ -21,14 +23,19 @@ export class AuthSignupDto {
     message: 'password is not a format',
   })
   password: string;
+
   @IsOptional()
   avatar: Avatar;
+
   @IsOptional()
   role: string;
+
   @IsOptional()
   createdAt: Date;
+
   @IsOptional()
   resetPasswordToken: string;
+
   @IsOptional()
   resetPasswordExpire: Date;
 }
