@@ -1,23 +1,27 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { MongooseModule } from '@nestjs/mongoose';
 import { ProductModule } from './product/product.module';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { MailerModule } from '@nestjs-modules/mailer';
+import { MongooseModule } from '@nestjs/mongoose';
 
 @Module({
   imports: [
-    MailerModule.forRoot({
-      transport: {
-        host: 'smtp.mailtrap.io',
-        port: 2525,
-        secure: false,
-        auth: {
-          user: '4617911e48b115',
-          pass: '02f364192412eb',
+    MailerModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        transport: {
+          host: configService.get('host_mail'),
+          port: configService.get('port_mail'),
+          secure: false,
+          auth: {
+            user: configService.get('user_mail'),
+            pass: configService.get('pass_mail'),
+          },
         },
-      },
+      }),
+      inject: [ConfigService],
     }),
     ConfigModule,
     ConfigModule.forRoot({ isGlobal: true, expandVariables: true }),

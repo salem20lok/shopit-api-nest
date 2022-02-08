@@ -66,16 +66,18 @@ export class AuthService {
       };
       const accessToken: string = await this.JwtService.sign(payload);
 
-      const message = ` <h1> Bonjour madame/monsier :${user.name}</h1> <br/>
-  <p>Vous avez recu un message pour changer votre mot de passe</p>
-  <a href="http://localhost:3000/user/changePasword/?token=${accessToken}">Link_forget_password</a>`;
+      const message = ` <h1 style="color: blue"> Bonjour madame/monsier :${user.name}</h1> <br/>
+  <p style="font-style: italic" >Vous avez recu un message pour changer votre mot de passe 🔐💢⚙️</p>
+  <a href="http://localhost:3000/user/changePasword/?token=${accessToken}"
+   style="color: white ; display: block ; background: red ; padding: 10px ;border-radius:5px ;width: 400px;
+    text-align: center;text-decoration: none " >Link_forget_password</a>`;
 
       this.mailerService
         .sendMail({
           to: 'salemlokmani99@gmail.com', // list of receivers
-          from: 'salemlokmani99@gmail.com', // sender address
-          subject: 'Testing Nest MailerModule ✔', // Subject line
-          text: 'welcome', // plaintext body
+          from: 'shopItService@gmail.com', // sender address
+          subject: 'Forget Password ✔', // Subject line
+          text: 'ShopIt', // plaintext body
           html: message, // HTML body content
         })
         .catch((e) => {
