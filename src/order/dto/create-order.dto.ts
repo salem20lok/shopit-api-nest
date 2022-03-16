@@ -1,15 +1,17 @@
-import { orderItems } from '../order.interface';
+import { orderItems, PaymentInfo, shippingInfo } from '../order.interface';
 import { IsNotEmpty } from 'class-validator';
 
 export class CreateOrderDto {
   @IsNotEmpty()
   orderItems: orderItems;
 
-  itemsPrice: number;
+  @IsNotEmpty()
+  shoppingInfo: shippingInfo;
+
+  @IsNotEmpty()
+  paymentInfo: PaymentInfo;
 
   taxPrice: number;
-
-  TotalPrice: number;
 
   user: string;
 }

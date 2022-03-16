@@ -15,16 +15,17 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-Product.Dto';
 import { searchProductDto } from './dto/search-product.dto';
 import { filterProductDto } from './dto/filter-product.dto';
+import { GetUser } from '../auth/get-user.decorator';
+import { ObjectId } from 'mongoose';
 import { AuthGuard } from '@nestjs/passport';
 import { Roles } from '../auth/authorization/roles.decorator';
 import { RoleEnum } from '../auth/authorization/role.enum';
 import { RolesGuard } from '../auth/authorization/roles.guard';
-import { GetUser } from '../auth/get-user.decorator';
-import { ObjectId } from 'mongoose';
+import { PaginationProductDto } from './dto/pagination-product.dto';
 
 @Controller('product')
 // auth & authorization
-@UseGuards(AuthGuard(), RolesGuard)
+//@UseGuards(RolesGuard)
 export class ProductController {
   constructor(private readonly ProductService: ProductService) {}
 
@@ -85,12 +86,39 @@ export class ProductController {
     return this.ProductService.getAllProduct();
   }
 
+  @Get('pagination')
+  getAllProductPagination(
+    @Query() paginationDto: PaginationProductDto,
+  ): Promise<{
+    products: Product[];
+    count: number;
+  }> {
+    const query = {
+      name: { $regex: `.*${paginationDto.name}.*` },
+    };
+
+    if (!paginationDto.name) {
+      delete query.name;
+    }
+
+    return this.ProductService.getAllProductPagination(
+      paginationDto.skip,
+      query,
+    );
+  }
+
+  @Get('category')
+  getCategories(): Promise<string[]> {
+    return this.ProductService.getCategories();
+  }
+
   @Get(':id')
   getProductById(@Param('id') id: string): Promise<Product> {
     return this.ProductService.getProductById(id);
   }
 
   @Post()
+  @UseGuards(AuthGuard(), RolesGuard)
   // authorization
   @Roles(RoleEnum.admin)
   newProduct(
@@ -102,6 +130,7 @@ export class ProductController {
   }
 
   @Put(':id/newProduct')
+  @UseGuards(AuthGuard(), RolesGuard)
   // authorization
   @Roles(RoleEnum.admin)
   updateProduct(
@@ -113,6 +142,7 @@ export class ProductController {
   }
 
   @Delete(':id')
+  @UseGuards(AuthGuard(), RolesGuard)
   // authorization
   @Roles(RoleEnum.admin)
   deleteProduct(@Param('id') id: string): Promise<void> {

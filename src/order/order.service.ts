@@ -2,10 +2,9 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { Order } from './schemas/order.schema';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
-import { CreateOrderDto } from './dto/create-order.dto';
 import { Product } from '../product/schemas/product.schema';
 import { UpdateOrderDto } from './dto/update-order.dto';
-import { ConfirmedOrderDto } from './dto/confirmed-Order.Dto';
+import { CreateOrderDto } from './dto/create-order.dto';
 
 @Injectable()
 export class OrderService {
@@ -14,13 +13,19 @@ export class OrderService {
     @InjectModel(Product.name) private ProductModel: Model<Product>,
   ) {}
 
-  async newOrder(id: string, createOrderDto: CreateOrderDto): Promise<Order> {
+  async newOrder(createOrder: CreateOrderDto): Promise<void> {
     try {
-      createOrderDto['user'] = id;
-      const order = new this.OrderModel(createOrderDto);
-      return await order.save();
+      const order = new this.OrderModel(createOrder);
+      order.orderStatus = 'confirmed';
+      await order.save().then(async (e) => {
+        e.orderItems.map(async (el) => {
+          const product = await this.ProductModel.findById(el.product);
+          product.stock = product.stock - Number(el.quantity);
+          await product.save();
+        });
+      });
     } catch (e) {
-      throw new NotFoundException(e.message);
+      console.log(e.me);
     }
   }
 
@@ -77,26 +82,5 @@ export class OrderService {
 
   async deleteItems(user: string): Promise<void> {
     await this.OrderModel.findOneAndDelete({ user, orderStatus: 'processing' });
-  }
-
-  async confirmedOrder(
-    user: string,
-    confirmedOrderDto: ConfirmedOrderDto,
-  ): Promise<void> {
-    const orderStatus = 'confirmed';
-    const { shoppingInfo, paymentInfo } = confirmedOrderDto;
-    await this.OrderModel.findOneAndUpdate(
-      {
-        user,
-        orderStatus: 'processing',
-      },
-      { orderStatus, shoppingInfo, paymentInfo },
-    ).then(async (e) => {
-      e.orderItems.map(async (el) => {
-        const product = await this.ProductModel.findById(el.product);
-        product.stock = product.stock - Number(el.quantity);
-        await product.save();
-      });
-    });
   }
 }

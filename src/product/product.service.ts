@@ -84,10 +84,7 @@ export class ProductService {
         throw new NotFoundException(`this product${id} not found `);
       }
       updateProductDto['user'] = user;
-      const product = await this.ProductModel.findByIdAndUpdate(
-        id,
-        updateProductDto,
-      );
+      await this.ProductModel.findByIdAndUpdate(id, updateProductDto);
       return await this.ProductModel.findById(id);
     } catch (e) {
       throw new NotFoundException(`this product id: ${id} not found `);
@@ -104,5 +101,22 @@ export class ProductService {
     } catch (e) {
       throw new NotFoundException(`this product${id} not found `);
     }
+  }
+
+  async getAllProductPagination(
+    skip: number,
+    query,
+  ): Promise<{
+    products: Product[];
+    count: number;
+  }> {
+    const products = await this.ProductModel.find(query).skip(skip).limit(8);
+    const count = await this.ProductModel.find(query).count();
+    return { products, count };
+  }
+
+  async getCategories(): Promise<string[]> {
+    const product = await this.ProductModel.find().distinct('category');
+    return product;
   }
 }

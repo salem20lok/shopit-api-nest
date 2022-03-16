@@ -17,7 +17,6 @@ import { Order } from './schemas/order.schema';
 import { RoleEnum } from '../auth/authorization/role.enum';
 import { Roles } from '../auth/authorization/roles.decorator';
 import { UpdateOrderDto } from './dto/update-order.dto';
-import { ConfirmedOrderDto } from './dto/confirmed-Order.Dto';
 
 // auth & authorization
 @UseGuards(AuthGuard(), RolesGuard)
@@ -29,8 +28,10 @@ export class OrderController {
   newOrder(
     @GetUser() id: string,
     @Body() createOrder: CreateOrderDto,
-  ): Promise<Order> {
-    return this.orderService.newOrder(id, createOrder);
+  ): Promise<void> {
+    createOrder.user = id;
+    createOrder.paymentInfo.user = id;
+    return this.orderService.newOrder(createOrder);
   }
 
   @Get('/admin')
@@ -60,13 +61,5 @@ export class OrderController {
   @Delete(':id')
   deleteOrderProduct(@GetUser() id: string): Promise<void> {
     return this.orderService.deleteItems(id);
-  }
-
-  @Put('/confirmedOrder')
-  confirmedOrder(
-    @GetUser() id: string,
-    @Body() confirmedDto: ConfirmedOrderDto,
-  ) {
-    return this.orderService.confirmedOrder(id, confirmedDto);
   }
 }
