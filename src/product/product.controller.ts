@@ -95,10 +95,34 @@ export class ProductController {
   }> {
     const query = {
       name: { $regex: `.*${paginationDto.name}.*` },
+      category: paginationDto.category,
+      rating: { $lte: paginationDto.ratingInf },
+      price: { $lte: paginationDto.priceInf },
     };
 
     if (!paginationDto.name) {
       delete query.name;
+    }
+
+    if (paginationDto.ratingSup) {
+      delete query.rating.$lte;
+      query.rating['$gte'] = paginationDto.ratingSup;
+    }
+
+    if (paginationDto.priceSup) {
+      delete query.price.$lte;
+      query.price['$gte'] = paginationDto.priceSup;
+    }
+
+    if (!paginationDto.category) {
+      delete query.category;
+    }
+
+    if (!paginationDto.ratingInf && !paginationDto.ratingSup) {
+      delete query.rating;
+    }
+    if (!paginationDto.priceInf && !paginationDto.priceSup) {
+      delete query.price;
     }
 
     return this.ProductService.getAllProductPagination(

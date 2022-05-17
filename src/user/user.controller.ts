@@ -24,6 +24,11 @@ import { UpdatePasswordDto } from './dto/updatePassword.Dto';
 export class UserController {
   constructor(private readonly UserService: UserService) {}
 
+  @Get('identification')
+  getUser(@GetUser() id: string): Promise<User> {
+    return this.UserService.getUser(id);
+  }
+
   @Get()
   @Roles(RoleEnum.admin)
   getAllUser(): Promise<User[]> {

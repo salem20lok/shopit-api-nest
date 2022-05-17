@@ -15,7 +15,7 @@ export class User {
   @Prop({ type: mongoose.Schema.Types.Mixed })
   avatar: {
     public_id: { type: string; required: true };
-    url: { type: string; required: true };
+    url: { type: string; required: true; default: '/images/avatar/avatar.png' };
   };
   @Prop({ type: [String], default: RoleEnum.user, enum: RoleEnum })
   role: string[];
